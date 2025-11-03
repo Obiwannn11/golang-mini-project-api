@@ -9,6 +9,10 @@ import (
 
 	"rakamin-evermos/config"
 	"rakamin-evermos/model"
+	"rakamin-evermos/handler"
+	"rakamin-evermos/repository"
+	"rakamin-evermos/router"
+	"rakamin-evermos/usecase"
 )
 
 var (
@@ -29,22 +33,25 @@ func main() {
 		&model.DetailTrx{},
 	)
 	if err != nil {
-		log.Fatal("Gagal melakukan migrasi database:", err)
+		log.Fatal("failed migrasi database:", err)
 	}
-	log.Println("Migrasi Database Selesai.")
+	log.Println("Migrasi Database finished.")
 
+	// gin router
 	r := gin.Default()
 
-    // tes
-    r.GET("/ping", func(c *gin.Context) {
-        c.JSON(200, gin.H{
-            "message": "pong",
-        })
-    })
+	userRepo := repository.NewUserRepository(db)
+	tokoRepo := repository.NewTokoRepository(db)
+
+	authUsecase := usecase.NewAuthUsecase(userRepo, tokoRepo)
+
+	authHandler := handler.NewAuthHandler(authUsecase)
+
+	router.SetupRouter(r, authHandler)
 
 	port := os.Getenv("PORT")
-	log.Printf("Server berjalan di http://localhost:%s\n", port)
+	log.Printf("Server running in http://localhost:%s\n", port)
 	if err := r.Run(":" + port); err != nil {
-		log.Fatal("Gagal menjalankan server:", err)
+		log.Fatal("Failed running server:", err)
 	}
 }

@@ -2,13 +2,14 @@ package router
 
 import (
 	"net/http"
+
 	"rakamin-evermos/handler"
 	"rakamin-evermos/middleware"
 
 	"github.com/gin-gonic/gin"
 )
 
-func SetupRouter(r *gin.Engine, authHandler handler.AuthHandler) {
+func SetupRouter(r *gin.Engine, authHandler handler.AuthHandler, userHandler handler.UserHandler) {
 
 	api := r.Group("/api/v1")
 
@@ -27,7 +28,10 @@ func SetupRouter(r *gin.Engine, authHandler handler.AuthHandler) {
 				"user_id": userID,
 			})
 		})
-		
+
+		authenticated.GET("users/me", userHandler.GetProfile)
+		authenticated.PUT("users/me", userHandler.UpdateProfile)
+
 	}
 
 	admin := api.Group("")

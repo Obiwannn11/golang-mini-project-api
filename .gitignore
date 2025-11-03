@@ -1,0 +1,12 @@
+.env
+rakamin-evermos
+*.exe
+*.out
+*.app
+.DS_Store
+Thumbs.db
+*~
+.vscode/
+.idea/
+uploads/
+vendor/

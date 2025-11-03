@@ -7,7 +7,7 @@ type User struct {
 	Nama         string    `gorm:"size:255"`
 	KataSandi    string    `gorm:"size:255"`
 	NoTelp       string    `gorm:"size:255;unique"`
-	TanggalLahir time.Time `gorm:"type:date"`
+	TanggalLahir *time.Time `gorm:"type:date"`
 	JenisKelamin string    `gorm:"size:255"`
 	Tentang      string    `gorm:"type:text"`
 	Pekerjaan    string    `gorm:"size:255"`

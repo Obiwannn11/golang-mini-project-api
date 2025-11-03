@@ -14,6 +14,7 @@ func SetupRouter(r *gin.Engine,
 	 userHandler handler.UserHandler,
 	 addressHandler handler.AddressHandler,
 	 categoryHandler handler.CategoryHandler,
+	 tokoHandler handler.TokoHandler,
 ) {
 
 	api := r.Group("/api/v1")
@@ -45,6 +46,11 @@ func SetupRouter(r *gin.Engine,
 		authenticated.GET("/addresses/:id", addressHandler.GetAddressByID)
 		authenticated.PUT("/addresses/:id", addressHandler.UpdateAddress)
 		authenticated.DELETE("/addresses/:id", addressHandler.DeleteAddress)
+
+		// Toko routes
+		authenticated.GET("/toko/me", tokoHandler.GetMyToko)
+		authenticated.PUT("/toko/me", tokoHandler.UpdateMyToko)
+		authenticated.POST("/toko/me/photo", tokoHandler.UploadTokoPhoto)
 
 	}
 

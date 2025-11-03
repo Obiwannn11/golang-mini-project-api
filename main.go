@@ -49,13 +49,15 @@ func main() {
 	userUsecase := usecase.NewUserUsecase(userRepo)
 	addressUsecase := usecase.NewAddressUsecase(addressRepo)
 	categoryUsecase := usecase.NewCategoryUsecase(categoryRepo)
+	tokoUsecase := usecase.NewTokoUsecase(tokoRepo)
 
 	authHandler := handler.NewAuthHandler(authUsecase)
 	userHandler := handler.NewUserHandler(userUsecase)
 	addressHandler := handler.NewAddressHandler(addressUsecase)
 	categoryHandler := handler.NewCategoryHandler(categoryUsecase)
+	tokoHandler := handler.NewTokoHandler(tokoUsecase)
 
-	router.SetupRouter(r, authHandler, userHandler, addressHandler, categoryHandler)
+	router.SetupRouter(r, authHandler, userHandler, addressHandler, categoryHandler, tokoHandler)
 
 	port := os.Getenv("PORT")
 	log.Printf("Server running in http://localhost:%s\n", port)

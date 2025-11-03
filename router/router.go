@@ -15,12 +15,16 @@ func SetupRouter(r *gin.Engine,
 	 addressHandler handler.AddressHandler,
 	 categoryHandler handler.CategoryHandler,
 	 tokoHandler handler.TokoHandler,
+	 produkHandler handler.ProdukHandler,
 ) {
 
 	api := r.Group("/api/v1")
 
 	api.POST("/register", authHandler.Register)
 	api.POST("/login", authHandler.Login)
+
+	api.GET("/produk", produkHandler.GetAllProduk)
+	api.GET("/produk/:id", produkHandler.GetProdukByID)
 
 	authenticated := api.Group("")
 	authenticated.Use(middleware.AuthMiddleware())
@@ -52,6 +56,12 @@ func SetupRouter(r *gin.Engine,
 		authenticated.PUT("/toko/me", tokoHandler.UpdateMyToko)
 		authenticated.POST("/toko/me/photo", tokoHandler.UploadTokoPhoto)
 
+		// Produk routes
+		authenticated.POST("/my-produk", produkHandler.CreateProduk)
+		authenticated.GET("/my-produk", produkHandler.GetMyProduk)
+		authenticated.PUT("/my-produk/:id", produkHandler.UpdateProduk)
+		authenticated.DELETE("/my-produk/:id", produkHandler.DeleteProduk)
+		authenticated.POST("/my-produk/:id/photo", produkHandler.UploadFotoProduk)
 	}
 
 	admin := api.Group("")

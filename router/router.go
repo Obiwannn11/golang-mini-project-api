@@ -9,7 +9,12 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-func SetupRouter(r *gin.Engine, authHandler handler.AuthHandler, userHandler handler.UserHandler, addressHandler handler.AddressHandler) {
+func SetupRouter(r *gin.Engine,
+	 authHandler handler.AuthHandler,
+	 userHandler handler.UserHandler,
+	 addressHandler handler.AddressHandler,
+	 categoryHandler handler.CategoryHandler,
+) {
 
 	api := r.Group("/api/v1")
 
@@ -29,9 +34,12 @@ func SetupRouter(r *gin.Engine, authHandler handler.AuthHandler, userHandler han
 			})
 		})
 
+
+		// User routes
 		authenticated.GET("users/me", userHandler.GetProfile)
 		authenticated.PUT("users/me", userHandler.UpdateProfile)
 
+		// Address routes
 		authenticated.POST("/addresses", addressHandler.CreateAddress)
 		authenticated.GET("/addresses", addressHandler.GetAddresses)
 		authenticated.GET("/addresses/:id", addressHandler.GetAddressByID)
@@ -43,7 +51,12 @@ func SetupRouter(r *gin.Engine, authHandler handler.AuthHandler, userHandler han
 	admin := api.Group("")
 	admin.Use(middleware.AuthMiddleware(), middleware.AdminOnlyMiddleware())
 	{
-
+		// Category routes
+		admin.POST("/categories", categoryHandler.CreateCategory)
+		admin.GET("/categories", categoryHandler.GetAllCategories)
+		admin.GET("/categories/:id", categoryHandler.GetCategoryByID)
+		admin.PUT("/categories/:id", categoryHandler.UpdateCategory)
+		admin.DELETE("/categories/:id", categoryHandler.DeleteCategory)
 	}
 
 }

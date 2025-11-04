@@ -46,6 +46,9 @@ func main() {
 	categoryRepo := repository.NewCategoryRepository(db)
 	produkRepo := repository.NewProdukRepository(db)
 	fotoProdukRepo := repository.NewFotoProdukRepository(db)
+	transaksiRepo := repository.NewTransaksiRepository(db)
+	detailTrxRepo := repository.NewDetailTrxRepository(db)
+	logProdukRepo := repository.NewLogProdukRepository(db)
 
 	authUsecase := usecase.NewAuthUsecase(userRepo, tokoRepo)
 	userUsecase := usecase.NewUserUsecase(userRepo)
@@ -53,6 +56,14 @@ func main() {
 	categoryUsecase := usecase.NewCategoryUsecase(categoryRepo)
 	tokoUsecase := usecase.NewTokoUsecase(tokoRepo)
 	produkUsecase := usecase.NewProdukUsecase(produkRepo, fotoProdukRepo, tokoRepo)
+	transaksiUsecase := usecase.NewTransaksiUsecase(
+		db,
+		transaksiRepo,
+		detailTrxRepo,
+		logProdukRepo,
+		produkRepo,
+		addressRepo,
+	)
 
 	authHandler := handler.NewAuthHandler(authUsecase)
 	userHandler := handler.NewUserHandler(userUsecase)
@@ -60,8 +71,18 @@ func main() {
 	categoryHandler := handler.NewCategoryHandler(categoryUsecase)
 	tokoHandler := handler.NewTokoHandler(tokoUsecase)
 	produkHandler := handler.NewProdukHandler(produkUsecase)
+	transaksiHandler := handler.NewTransaksiHandler(transaksiUsecase)
 
-	router.SetupRouter(r, authHandler, userHandler, addressHandler, categoryHandler, tokoHandler, produkHandler)
+	router.SetupRouter(
+		r,
+		authHandler,
+		userHandler,
+		addressHandler,
+		categoryHandler,
+		tokoHandler,
+		produkHandler,
+		transaksiHandler,
+)
 
 	port := os.Getenv("PORT")
 	log.Printf("Server running in http://localhost:%s\n", port)

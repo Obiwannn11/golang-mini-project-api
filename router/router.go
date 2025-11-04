@@ -16,6 +16,7 @@ func SetupRouter(r *gin.Engine,
 	 categoryHandler handler.CategoryHandler,
 	 tokoHandler handler.TokoHandler,
 	 produkHandler handler.ProdukHandler,
+	 transaksiHandler handler.TransaksiHandler,
 ) {
 
 	api := r.Group("/api/v1")
@@ -62,6 +63,11 @@ func SetupRouter(r *gin.Engine,
 		authenticated.PUT("/my-produk/:id", produkHandler.UpdateProduk)
 		authenticated.DELETE("/my-produk/:id", produkHandler.DeleteProduk)
 		authenticated.POST("/my-produk/:id/photo", produkHandler.UploadFotoProduk)
+
+		// Transaksi routes
+		authenticated.POST("/transaksi", transaksiHandler.CreateTransaksi) // Checkout
+		authenticated.GET("/transaksi", transaksiHandler.GetMyTransaksi)   // history
+		authenticated.GET("/transaksi/:id", transaksiHandler.GetMyTransaksiByID) // Detail history
 	}
 
 	admin := api.Group("")

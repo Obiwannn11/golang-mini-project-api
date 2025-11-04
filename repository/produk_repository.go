@@ -5,9 +5,10 @@ import (
 	"rakamin-evermos/utils"
 
 	"gorm.io/gorm"
+	"gorm.io/gorm/clause"
 )
 
-//  produck parameter filter 
+//  produck parameter filter
 type FilterInput struct {
 	Search     string
 	CategoryID uint
@@ -23,6 +24,9 @@ type ProdukRepository interface {
 
 	FindAll(pagination utils.PaginationInput, filter FilterInput) ([]model.Produk, int64, error)
 	FindAllByTokoID(tokoID uint, pagination utils.PaginationInput, filter FilterInput) ([]model.Produk, int64, error)
+
+	FindByIDWithLock(tx *gorm.DB, produkID uint) (model.Produk, error)
+	UpdateWithTx(tx *gorm.DB, produk model.Produk) (model.Produk, error)
 }
 
 type produkRepository struct {
@@ -110,4 +114,19 @@ func (r *produkRepository) FindAllByTokoID(tokoID uint, pagination utils.Paginat
 	err = query.Scopes(utils.Paginate(pagination.Page, pagination.Limit)).Preload("Category").Find(&produks).Error
 
 	return produks, totalData, err
+}
+
+// for get and lock db when update stock in transaksi
+func (r *produkRepository) FindByIDWithLock(tx *gorm.DB, produkID uint) (model.Produk, error) {
+	var produk model.Produk
+	// lock row until transaksi commit/rollback
+	err := tx.Clauses(clause.Locking{Strength: "UPDATE"}).Where("id = ?", produkID).First(&produk).Error //sql for UPDATE
+	return produk, err
+}
+
+// update data produk use tx
+func (r *produkRepository) UpdateWithTx(tx *gorm.DB, produk model.Produk) (model.Produk, error) {
+	// use tx
+	err := tx.Save(&produk).Error
+	return produk, err
 }
